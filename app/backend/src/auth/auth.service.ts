@@ -55,8 +55,8 @@ export class AuthService {
       .set({ usedAt: new Date() })
       .where(eq(magicLinkTokens.id, record.id));
 
-    const user = await this.findOrCreateUser(record.email, 'email');
-    return this.issueTokens(user.id);
+    const { user, isNewUser } = await this.findOrCreateUser(record.email, 'email');
+    return this.issueTokens(user.id, isNewUser);
   }
 
   // ---------- GOOGLE ----------
@@ -69,8 +69,8 @@ export class AuthService {
     const payload = ticket.getPayload();
     if (!payload?.email) throw new UnauthorizedException('Invalid Google token');
 
-    const user = await this.findOrCreateUser(payload.email, 'google');
-    return this.issueTokens(user.id);
+    const { user, isNewUser } = await this.findOrCreateUser(payload.email, 'google');
+    return this.issueTokens(user.id, isNewUser);
   }
 
   // ---------- APPLE ----------
@@ -81,24 +81,24 @@ export class AuthService {
     });
     if (!payload?.email) throw new UnauthorizedException('Invalid Apple token');
 
-    const user = await this.findOrCreateUser(payload.email, 'apple');
-    return this.issueTokens(user.id);
+    const { user, isNewUser } = await this.findOrCreateUser(payload.email, 'apple');
+    return this.issueTokens(user.id, isNewUser);
   }
 
   // ---------- SHARED ----------
 
   private async findOrCreateUser(email: string, provider: string) {
     const [existing] = await db.select().from(users).where(eq(users.email, email));
-    if (existing) return existing;
+    if (existing) return { user: existing, isNewUser: false };
 
     const [created] = await db
       .insert(users)
       .values({ email, authProvider: provider })
       .returning();
-    return created;
+    return { user: created, isNewUser: true };
   }
 
-  private async issueTokens(userId: string) {
+  private async issueTokens(userId: string, isNewUser: boolean) {
     const accessToken = this.jwt.sign(
       { sub: userId },
       { secret: process.env.JWT_ACCESS_SECRET, expiresIn: process.env.JWT_ACCESS_EXPIRES_IN } as JwtSignOptions,
@@ -110,7 +110,7 @@ export class AuthService {
 
     await db.insert(refreshTokens).values({ userId, tokenHash, expiresAt });
 
-    return { accessToken, refreshToken: rawRefreshToken, userId };
+    return { accessToken, refreshToken: rawRefreshToken, userId, isNewUser };
   }
 
   async refresh(rawRefreshToken: string) {
@@ -135,6 +135,6 @@ export class AuthService {
       .set({ revokedAt: new Date() })
       .where(eq(refreshTokens.id, record.id));
 
-    return this.issueTokens(record.userId);
+    return this.issueTokens(record.userId, false);
   }
 }

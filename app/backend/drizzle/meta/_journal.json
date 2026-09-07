@@ -8,6 +8,13 @@
       "when": 1788715249124,
       "tag": "0000_bored_moonstone",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788718225079,
+      "tag": "0001_wakeful_bullseye",
+      "breakpoints": true
     }
   ]
 }

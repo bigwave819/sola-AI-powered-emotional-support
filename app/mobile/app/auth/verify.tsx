@@ -19,7 +19,7 @@ export default function VerifyMagicLink() {
       .then(async (data) => {
         await tokenStorage.save(data.accessToken, data.refreshToken);
         setSession(data.userId);
-        router.replace('/(tabs)');
+        router.replace(data.isNewUser ? '/onboarding/age-gate' : '/(tabs)');
       })
       .catch(() => router.replace('/auth/failed'));
   }, [token]);
