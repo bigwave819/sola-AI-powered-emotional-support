@@ -16,6 +16,21 @@ interface OnboardingPayload {
 
 @Injectable()
 export class UsersService {
+  async getMe(userId: string) {
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    const [preferences] = await db
+      .select()
+      .from(userPreferences)
+      .where(eq(userPreferences.userId, userId));
+
+    return {
+      id: user.id,
+      email: user.email,
+      preferredName: user.preferredName,
+      ageConfirmed: user.ageConfirmed,
+      onboardingCompleted: !!preferences?.onboardingCompletedAt,
+    };
+  }
   async completeOnboarding(userId: string, payload: OnboardingPayload) {
     await db
       .update(users)

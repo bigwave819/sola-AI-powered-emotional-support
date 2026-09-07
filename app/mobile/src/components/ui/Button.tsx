@@ -1,52 +1,31 @@
-import { Pressable, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable } from 'react-native';
 import { Text } from './Text';
-import { theme } from '@/src/theme';
 
 interface Props {
   label: string;
   onPress: () => void;
   variant?: 'primary' | 'secondary';
-  style?: ViewStyle;
+  className?: string;
   disabled?: boolean;
 }
 
-export function Button({ label, onPress, variant = 'primary', style, disabled }: Props) {
+export function Button({ label, onPress, variant = 'primary', className = '', disabled }: Props) {
+  const base = 'py-3 px-6 rounded-full items-center justify-center';
+  const variantClass =
+    variant === 'primary' ? 'bg-accent' : 'bg-transparent border border-border';
+
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
-      style={({ pressed }) => [
-        styles.base,
-        variant === 'primary' ? styles.primary : styles.secondary,
-        pressed && { opacity: 0.85 },
-        disabled && { opacity: 0.4 },
-        style,
-      ]}
+      className={`${base} ${variantClass} ${disabled ? 'opacity-40' : ''} ${className}`}
     >
       <Text
         variant="bodySemiBold"
-        color={variant === 'primary' ? theme.color.surfaceElevated : theme.color.textPrimary}
+        className={variant === 'primary' ? 'text-surface-elevated' : 'text-text-primary'}
       >
         {label}
       </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  base: {
-    paddingVertical: theme.space.sm + 4,
-    paddingHorizontal: theme.space.lg,
-    borderRadius: theme.radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primary: {
-    backgroundColor: theme.color.accent,
-  },
-  secondary: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: theme.color.border,
-  },
-});

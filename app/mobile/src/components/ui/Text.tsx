@@ -1,31 +1,21 @@
 import { Text as RNText, TextProps } from 'react-native';
-import { theme } from '@/src/theme';
 
 type Variant = 'headline' | 'headlineLight' | 'body' | 'bodyMedium' | 'bodySemiBold' | 'caption';
 
 interface Props extends TextProps {
   variant?: Variant;
-  color?: string;
+  className?: string;
 }
 
-const variantStyles: Record<Variant, { fontFamily: string; fontSize: number }> = {
-  headline: { fontFamily: theme.font.headline, fontSize: theme.fontSize['2xl'] },
-  headlineLight: { fontFamily: theme.font.headlineLight, fontSize: theme.fontSize.xl },
-  body: { fontFamily: theme.font.body, fontSize: theme.fontSize.base },
-  bodyMedium: { fontFamily: theme.font.bodyMedium, fontSize: theme.fontSize.base },
-  bodySemiBold: { fontFamily: theme.font.bodySemiBold, fontSize: theme.fontSize.base },
-  caption: { fontFamily: theme.font.body, fontSize: theme.fontSize.sm },
+const variantClasses: Record<Variant, string> = {
+  headline: 'font-headline text-2xl text-text-primary',
+  headlineLight: 'font-headline-light text-xl text-text-primary',
+  body: 'font-body text-base text-text-primary',
+  bodyMedium: 'font-body-medium text-base text-text-primary',
+  bodySemiBold: 'font-body-semibold text-base text-text-primary',
+  caption: 'font-body text-sm text-text-secondary',
 };
 
-export function Text({ variant = 'body', color, style, ...props }: Props) {
-  return (
-    <RNText
-      style={[
-        variantStyles[variant],
-        { color: color ?? theme.color.textPrimary },
-        style,
-      ]}
-      {...props}
-    />
-  );
+export function Text({ variant = 'body', className = '', ...props }: Props) {
+  return <RNText className={`${variantClasses[variant]} ${className}`} {...props} />;
 }
