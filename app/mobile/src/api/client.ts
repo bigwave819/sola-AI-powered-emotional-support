@@ -1,5 +1,16 @@
 import { tokenStorage } from '@/src/auth/tokenStorage';
 
+export class ApiError extends Error {
+  status: number;
+  code?: string;
+
+  constructor(message: string, status: number, code?: string) {
+    super(message);
+    this.status = status;
+    this.code = code;
+  }
+}
+
 const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 async function request(path: string, options: RequestInit = {}) {
@@ -41,10 +52,35 @@ async function request(path: string, options: RequestInit = {}) {
         ...options.headers,
       },
     });
+    if (!retryRes.ok) {
+      let body: any = {};
+      try {
+        body = await retryRes.json();
+      } catch {
+        // response wasn't JSON — fine, body stays {}
+      }
+      throw new ApiError(
+        body.message || `Request failed: ${retryRes.status}`,
+        retryRes.status,
+        body.code,
+      );
+    }
     return retryRes.json();
   }
 
-  if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+  if (!res.ok) {
+    let body: any = {};
+    try {
+      body = await res.json();
+    } catch {
+      // response wasn't JSON — fine, body stays {}
+    }
+    throw new ApiError(
+      body.message || `Request failed: ${res.status}`,
+      res.status,
+      body.code,
+    );
+  }
   return res.json();
 }
 

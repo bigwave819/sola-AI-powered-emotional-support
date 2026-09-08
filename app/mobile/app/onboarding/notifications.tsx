@@ -1,11 +1,10 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { useOnboardingStore } from '@/src/onboarding/onboardingStore';
 import { tokenStorage } from '@/src/auth/tokenStorage';
-import { theme } from '@/src/theme';
 import { scheduleDailyReminder } from '@/src/notifications/scheduler';
 import { api } from '@/src/api/client';
 
@@ -47,7 +46,7 @@ export default function NotificationsStep() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center p-6 gap-4 bg-background">
       <Text variant="headline">Would you like reminders?</Text>
       <Text variant="body">You're always in control of when and how often.</Text>
       <Button label="Enable reminders" onPress={() => finish(true)} />
@@ -55,13 +54,3 @@ export default function NotificationsStep() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: theme.space.lg,
-    gap: theme.space.md,
-    backgroundColor: theme.color.background,
-  },
-});

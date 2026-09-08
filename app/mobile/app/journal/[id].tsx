@@ -1,7 +1,9 @@
 import { View, ScrollView, TextInput } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
+import { ApiError } from '@/src/api/client';
 import { Text } from '@/src/components/ui/Text';
+import { useToastStore } from '@/src/ui-feedback/toastStore';
 import { Button } from '@/src/components/ui/Button';
 import { Card } from '@/src/components/ui/Card';
 import {
@@ -53,6 +55,15 @@ export default function JournalCompose() {
                         onSuccess: (result) => {
                             setReflectionText(result.reflectionText);
                             setSafetyFlagged(result.flaggedForSafety);
+                        },
+                        onError: (err: unknown) => {
+                            if (err instanceof ApiError && err.code === 'AI_QUOTA_EXCEEDED') {
+                                router.push('/paywall');
+                            } else {
+                                // Keep logging for debugging AND surface a user-facing toast.
+                                console.error('Reflection failed', err);
+                                useToastStore.getState().show('Something went wrong. Please try again.');
+                            }
                         },
                     });
                 },

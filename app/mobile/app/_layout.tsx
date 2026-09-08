@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { tokenStorage } from '@/src/auth/tokenStorage';
 import { api } from '@/src/api/client';
 import { useAuthStore } from '@/src/auth/authStore';
+import { Toast } from '@/src/components/ui/Toast';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,6 +74,7 @@ export default function RootLayout() {
       <AuthGate>
         <Slot />
       </AuthGate>
+      <Toast />
     </QueryClientProvider>
   );
 }

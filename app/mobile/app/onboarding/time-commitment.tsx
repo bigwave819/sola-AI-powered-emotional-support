@@ -1,9 +1,8 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { useOnboardingStore } from '@/src/onboarding/onboardingStore';
-import { theme } from '@/src/theme';
 
 const OPTIONS = [
   { value: '2min', label: '2 minutes' },
@@ -17,7 +16,7 @@ export default function TimeCommitment() {
   const setValue = useOnboardingStore((s) => s.setTimeCommitment);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center p-6 gap-4 bg-background">
       <Text variant="headline">How much time do you want to give this?</Text>
       {OPTIONS.map((opt) => (
         <Button
@@ -35,13 +34,3 @@ export default function TimeCommitment() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: theme.space.lg,
-    gap: theme.space.md,
-    backgroundColor: theme.color.background,
-  },
-});

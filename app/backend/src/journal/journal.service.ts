@@ -131,7 +131,10 @@ export class JournalService {
       );
 
     if (value >= limit) {
-      throw new ForbiddenException('AI reflection limit reached for this period');
+      throw new ForbiddenException({
+        code: 'AI_QUOTA_EXCEEDED',
+        message: 'AI reflection limit reached for this period',
+      });
     }
   }
 }

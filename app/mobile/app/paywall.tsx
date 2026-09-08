@@ -6,6 +6,7 @@ import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { GlassSurface } from '@/src/components/ui/GlassSurface';
 import { useQueryClient } from '@tanstack/react-query';
+import { useToastStore } from '@/src/ui-feedback/toastStore';
 
 export default function Paywall() {
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
@@ -25,7 +26,10 @@ export default function Paywall() {
       queryClient.invalidateQueries({ queryKey: ['entitlement'] });
       router.back();
     } catch (err: any) {
-      if (!err.userCancelled) console.error('Purchase failed', err);
+      if (!err.userCancelled) {
+        console.error('Purchase failed', err);
+        useToastStore.getState().show('Purchase failed. Please try again.');
+      }
     }
   }
 

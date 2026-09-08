@@ -1,9 +1,8 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { useState } from 'react';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { GoogleSignInButton } from '@/src/auth/GoogleSignInButton';
-import { theme } from '@/src/theme';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');
@@ -19,7 +18,7 @@ export default function AuthScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center p-6 gap-4 bg-background">
       <Text variant="headline">Sign in to Sola</Text>
 
       <GoogleSignInButton />
@@ -32,13 +31,3 @@ export default function AuthScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: theme.space.lg,
-    gap: theme.space.md,
-    backgroundColor: theme.color.background,
-  },
-});

@@ -1,12 +1,11 @@
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
-import { theme } from '@/src/theme';
 
 export default function Trust() {
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center p-6 gap-4 bg-background">
       <Text variant="headline">Your reflections stay yours.</Text>
       <Text variant="body">
         Sola is built around private reflection. You control your data — export or delete it anytime.
@@ -15,13 +14,3 @@ export default function Trust() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: theme.space.lg,
-    gap: theme.space.md,
-    backgroundColor: theme.color.background,
-  },
-});

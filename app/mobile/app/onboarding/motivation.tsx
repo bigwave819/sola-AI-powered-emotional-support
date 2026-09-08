@@ -1,32 +1,34 @@
-import { View, Pressable, StyleSheet } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { router } from 'expo-router';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { useOnboardingStore } from '@/src/onboarding/onboardingStore';
-import { theme } from '@/src/theme';
 
 const OPTIONS = [
   'stress', 'overthinking', 'loneliness', 'self-understanding',
   'journaling', 'better habits', 'relaxation', 'focus',
 ];
 
+const CHIP_CLASS = 'py-2 px-4 rounded-full border border-border';
+const CHIP_SELECTED_CLASS = 'bg-accent border-accent';
+
 export default function Motivation() {
   const motivations = useOnboardingStore((s) => s.motivations);
   const toggle = useOnboardingStore((s) => s.toggleMotivation);
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center p-6 gap-6 bg-background">
       <Text variant="headline">What brings you here?</Text>
-      <View style={styles.chipRow}>
+      <View className="flex-row flex-wrap gap-2">
         {OPTIONS.map((opt) => {
           const selected = motivations.includes(opt);
           return (
             <Pressable
               key={opt}
               onPress={() => toggle(opt)}
-              style={[styles.chip, selected && styles.chipSelected]}
+              className={selected ? `${CHIP_CLASS} ${CHIP_SELECTED_CLASS}` : CHIP_CLASS}
             >
-              <Text color={selected ? theme.color.surfaceElevated : theme.color.textPrimary}>
+              <Text className={selected ? 'text-surface-elevated' : 'text-text-primary'}>
                 {opt}
               </Text>
             </Pressable>
@@ -37,25 +39,3 @@ export default function Motivation() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: theme.space.lg,
-    gap: theme.space.lg,
-    justifyContent: 'center',
-    backgroundColor: theme.color.background,
-  },
-  chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.space.sm },
-  chip: {
-    paddingVertical: theme.space.sm,
-    paddingHorizontal: theme.space.md,
-    borderRadius: theme.radius.full,
-    borderWidth: 1,
-    borderColor: theme.color.border,
-  },
-  chipSelected: {
-    backgroundColor: theme.color.accent,
-    borderColor: theme.color.accent,
-  },
-});

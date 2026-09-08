@@ -6,6 +6,7 @@ import { Button } from '@/src/components/ui/Button';
 import { Card } from '@/src/components/ui/Card';
 import { useExportData } from '@/src/privacy/useExportData';
 import { useDeleteAccount } from '@/src/privacy/useDeleteAccount';
+import { useToastStore } from '@/src/ui-feedback/toastStore';
 
 export default function Privacy() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -15,6 +16,10 @@ export default function Privacy() {
   function handleFinalDelete() {
     deleteAccount.mutate(undefined, {
       onSuccess: () => router.replace('/onboarding/welcome'),
+      onError: () => {
+        console.error('Delete account failed');
+        useToastStore.getState().show('Could not delete your account. Please try again.');
+      },
     });
   }
 
@@ -31,7 +36,12 @@ export default function Privacy() {
           label={exportData.isPending ? 'Preparing...' : 'Export data'}
           variant="secondary"
           className="mt-3"
-          onPress={() => exportData.mutate()}
+          onPress={() => exportData.mutate(undefined, {
+            onError: () => {
+              console.error('Export data failed');
+              useToastStore.getState().show('Could not export your data. Please try again.');
+            },
+          })}
           disabled={exportData.isPending}
         />
       </Card>

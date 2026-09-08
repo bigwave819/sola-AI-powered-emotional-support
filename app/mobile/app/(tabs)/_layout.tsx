@@ -1,7 +1,6 @@
 import { Tabs, router } from 'expo-router';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 import { Text } from '@/src/components/ui/Text';
-import { theme } from '@/src/theme';
 
 export default function TabsLayout() {
   return (
@@ -15,32 +14,14 @@ export default function TabsLayout() {
 
       {/* Persistent global mood check-in — reachable from any tab */}
       <Pressable
-        style={styles.fab}
+        className="absolute right-6 bottom-[90px] w-14 h-14 rounded-full bg-accent items-center justify-center shadow-[0_4px_8px_0_rgba(0,0,0,0.15)]"
+        style={{ elevation: 6 }}
         onPress={() => router.push('/mood/check-in')}
       >
-        <Text color={theme.color.surfaceElevated} variant="bodySemiBold">
+        <Text variant="bodySemiBold" className="text-surface-elevated">
           +
         </Text>
       </Pressable>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  fab: {
-    position: 'absolute',
-    right: theme.space.lg,
-    bottom: 90, // sits above the tab bar
-    width: 56,
-    height: 56,
-    borderRadius: theme.radius.full,
-    backgroundColor: theme.color.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: theme.elevation.medium,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
-  },
-});
