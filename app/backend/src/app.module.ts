@@ -11,9 +11,10 @@ import { AiModule } from './ai/ai.module';
 import { JournalModule } from './journal/journal.module';
 import { SafetyModule } from './safety/safety.module';
 import { PrivacyModule } from './privacy/privacy.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, HomeModule, MoodModule, ExercisesModule, InsightsModule, AiModule, JournalModule, SafetyModule, PrivacyModule],
+  imports: [AuthModule, UsersModule, HomeModule, MoodModule, ExercisesModule, InsightsModule, AiModule, JournalModule, SafetyModule, PrivacyModule, SubscriptionsModule],
   controllers: [AppController],
   providers: [AppService],
 })

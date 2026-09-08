@@ -6,6 +6,22 @@ import { eq, and, gte, desc } from 'drizzle-orm';
 
 @Injectable()
 export class InsightsService {
+  async suggestedReminderHour(userId: string): Promise<number> {
+    const moods = await db.select({ createdAt: moodEntries.createdAt }).from(moodEntries).where(eq(moodEntries.userId, userId));
+    const journals = await db.select({ createdAt: journalEntries.createdAt }).from(journalEntries).where(eq(journalEntries.userId, userId));
+
+    const allTimestamps = [...moods, ...journals].map((r) => r.createdAt.getHours());
+
+    if (allTimestamps.length === 0) {
+      return 19; // 🧭 cold-start default: early evening, a reasonable generic wind-down time
+    }
+
+    const counts: Record<number, number> = {};
+    for (const h of allTimestamps) counts[h] = (counts[h] ?? 0) + 1;
+
+    return Number(Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0]);
+  }
+
   async weekly(userId: string) {
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
@@ -92,3 +108,4 @@ export class InsightsService {
     return streak;
   }
 }
+

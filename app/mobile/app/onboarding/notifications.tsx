@@ -6,14 +6,22 @@ import { Button } from '@/src/components/ui/Button';
 import { useOnboardingStore } from '@/src/onboarding/onboardingStore';
 import { tokenStorage } from '@/src/auth/tokenStorage';
 import { theme } from '@/src/theme';
+import { scheduleDailyReminder } from '@/src/notifications/scheduler';
+import { api } from '@/src/api/client';
 
 export default function NotificationsStep() {
   const state = useOnboardingStore();
 
   async function finish(wantsNotifications: boolean) {
+
     if (wantsNotifications) {
-      await Notifications.requestPermissionsAsync();
+      const { granted } = await Notifications.requestPermissionsAsync();
+      if (granted) {
+        const suggestedHour = await api.get('/insights/suggested-reminder-hour');
+        await scheduleDailyReminder(suggestedHour, 0);
+      }
     }
+
     state.setNotificationsEnabled(wantsNotifications);
 
     const accessToken = await tokenStorage.getAccessToken();

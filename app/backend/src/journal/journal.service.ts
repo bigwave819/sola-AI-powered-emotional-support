@@ -6,12 +6,18 @@ import { userPreferences } from '../db/schema/preferences';
 import { eq, and, desc, gte, isNotNull, count } from 'drizzle-orm';
 import type { AiProvider } from '../ai/ai-provider.interface';
 import { SafetyService } from '../safety/safety.service';
+import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
 const FREE_TIER_MONTHLY_REFLECTION_LIMIT = 20;
+const PLUS_TIER_MONTHLY_REFLECTION_LIMIT = 500;
 
 @Injectable()
 export class JournalService {
-  constructor(@Inject('AiProvider') private aiProvider: AiProvider, private safetyService: SafetyService) { }
+  constructor(
+    @Inject('AiProvider') private aiProvider: AiProvider, 
+    private safetyService: SafetyService,
+    private subscriptionsService: SubscriptionsService,
+  ) { }
 
   async create(userId: string, moodEntryId?: string) {
     const [entry] = await db
@@ -103,8 +109,12 @@ export class JournalService {
   }
 
   private async assertAiQuotaAvailable(userId: string) {
-    // 🧭 Placeholder tier check — real Subscription/entitlement lookup comes in
-    // Phase 12. For now, everyone is treated as Free tier and metered.
+    const entitlement = await this.subscriptionsService.getEntitlement(userId);
+    const limit =
+      entitlement.tier === 'plus'
+        ? PLUS_TIER_MONTHLY_REFLECTION_LIMIT
+        : FREE_TIER_MONTHLY_REFLECTION_LIMIT;
+
     const monthStart = new Date();
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
@@ -120,7 +130,7 @@ export class JournalService {
         ),
       );
 
-    if (value >= FREE_TIER_MONTHLY_REFLECTION_LIMIT) {
+    if (value >= limit) {
       throw new ForbiddenException('AI reflection limit reached for this period');
     }
   }
