@@ -10,7 +10,6 @@ import { eq, and, isNull, gt } from 'drizzle-orm';
 import * as crypto from 'crypto';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 @Injectable()
 export class AuthService {
@@ -19,6 +18,12 @@ export class AuthService {
   // ---------- MAGIC LINK ----------
 
   async requestMagicLink(email: string) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured — magic link emails cannot be sent.');
+    }
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
     const token = nanoid(32);
     const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 min
 

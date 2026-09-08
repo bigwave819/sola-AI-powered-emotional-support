@@ -8,8 +8,8 @@ import type { AiProvider } from '../ai/ai-provider.interface';
 import { SafetyService } from '../safety/safety.service';
 import { SubscriptionsService } from '../subscriptions/subscriptions.service';
 
-const FREE_TIER_MONTHLY_REFLECTION_LIMIT = 20;
-const PLUS_TIER_MONTHLY_REFLECTION_LIMIT = 500;
+const FREE_TIER_MONTHLY_REFLECTION_LIMIT = Number(process.env.FREE_TIER_AI_LIMIT ?? 20);
+const PLUS_TIER_MONTHLY_REFLECTION_LIMIT = Number(process.env.PLUS_TIER_AI_LIMIT ?? 500);
 
 @Injectable()
 export class JournalService {

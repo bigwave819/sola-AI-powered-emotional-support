@@ -1,0 +1,104 @@
+﻿
+> backend@0.0.1 test:e2e
+> dotenv -e .env.test -- jest --config ./test/jest-e2e.json
+
+node.exe : FAIL test/quota-limits.e2e-spec.ts
+At C:\Program Files\nodejs\npm.ps1:29 char:3
++   & $NODE_EXE $NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (FAIL test/quota-limits.e2e-spec.ts:String) [], RemoteExcepti 
+   on
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ΓùÅ Test suite failed to run
+
+    Must use import to load ES Module: C:\Users\HP\Documents\codes\New 
+folder\sola\app\backend\node_modules\@nestjs\passport\dist\index.js
+
+    The file contains ESM syntax (import/export) that could not be executed as CommonJS. Either:
+      - Configure a transform (e.g. babel-jest) that compiles this file to CommonJS (see 
+https://jestjs.io/docs/code-transformation)
+      - If the file is in "node_modules", allow it to be transformed by adjusting 
+"transformIgnorePatterns" (see https://jestjs.io/docs/configuration#transformignorepatterns-arraystring)
+      - Use Node v24.9+ where Jest supports require(esm) natively (see 
+https://jestjs.io/docs/ecmascript-modules#require-of-esm)
+
+      at createRequireEsmError (../node_modules/jest-runtime/build/index.js:452:17)
+      at Object.<anonymous> (../src/auth/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/auth/auth.module.ts:3:1)
+      at Object.<anonymous> (../src/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/app.module.ts:4:1)
+      at Object.<anonymous> (C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/test/quota-limits.e2e-spec.ts:4:1)
+
+FAIL test/safety-trigger.e2e-spec.ts
+  ΓùÅ Test suite failed to run
+
+    Must use import to load ES Module: C:\Users\HP\Documents\codes\New 
+folder\sola\app\backend\node_modules\@nestjs\passport\dist\index.js
+
+    The file contains ESM syntax (import/export) that could not be executed as CommonJS. Either:
+      - Configure a transform (e.g. babel-jest) that compiles this file to CommonJS (see 
+https://jestjs.io/docs/code-transformation)
+      - If the file is in "node_modules", allow it to be transformed by adjusting 
+"transformIgnorePatterns" (see https://jestjs.io/docs/configuration#transformignorepatterns-arraystring)
+      - Use Node v24.9+ where Jest supports require(esm) natively (see 
+https://jestjs.io/docs/ecmascript-modules#require-of-esm)
+
+      at createRequireEsmError (../node_modules/jest-runtime/build/index.js:452:17)
+      at Object.<anonymous> (../src/auth/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/auth/auth.module.ts:3:1)
+      at Object.<anonymous> (../src/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/app.module.ts:4:1)
+      at Object.<anonymous> (C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/test/safety-trigger.e2e-spec.ts:4:1)
+
+FAIL test/auth-isolation.e2e-spec.ts
+  ΓùÅ Test suite failed to run
+
+    Must use import to load ES Module: C:\Users\HP\Documents\codes\New 
+folder\sola\app\backend\node_modules\@nestjs\passport\dist\index.js
+
+    The file contains ESM syntax (import/export) that could not be executed as CommonJS. Either:
+      - Configure a transform (e.g. babel-jest) that compiles this file to CommonJS (see 
+https://jestjs.io/docs/code-transformation)
+      - If the file is in "node_modules", allow it to be transformed by adjusting 
+"transformIgnorePatterns" (see https://jestjs.io/docs/configuration#transformignorepatterns-arraystring)
+      - Use Node v24.9+ where Jest supports require(esm) natively (see 
+https://jestjs.io/docs/ecmascript-modules#require-of-esm)
+
+      at createRequireEsmError (../node_modules/jest-runtime/build/index.js:452:17)
+      at Object.<anonymous> (../src/auth/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/auth/auth.module.ts:3:1)
+      at Object.<anonymous> (../src/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/app.module.ts:4:1)
+      at Object.<anonymous> (C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/test/auth-isolation.e2e-spec.ts:4:1)
+
+FAIL test/app.e2e-spec.ts
+  ΓùÅ Test suite failed to run
+
+    Must use import to load ES Module: C:\Users\HP\Documents\codes\New 
+folder\sola\app\backend\node_modules\@nestjs\passport\dist\index.js
+
+    The file contains ESM syntax (import/export) that could not be executed as CommonJS. Either:
+      - Configure a transform (e.g. babel-jest) that compiles this file to CommonJS (see 
+https://jestjs.io/docs/code-transformation)
+      - If the file is in "node_modules", allow it to be transformed by adjusting 
+"transformIgnorePatterns" (see https://jestjs.io/docs/configuration#transformignorepatterns-arraystring)
+      - Use Node v24.9+ where Jest supports require(esm) natively (see 
+https://jestjs.io/docs/ecmascript-modules#require-of-esm)
+
+      at createRequireEsmError (../node_modules/jest-runtime/build/index.js:452:17)
+      at Object.<anonymous> (../src/auth/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/auth/auth.module.ts:3:1)
+      at Object.<anonymous> (../src/C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/src/app.module.ts:4:1)
+      at Object.<anonymous> (C:/Users/HP/Documents/codes/New 
+folder/sola/app/backend/test/app.e2e-spec.ts:5:1)
+
+Test Suites: 4 failed, 4 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        47.585 s
+Ran all test suites.
