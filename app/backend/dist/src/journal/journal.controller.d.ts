@@ -1,4 +1,5 @@
 import { JournalService } from './journal.service';
+import { UpdateJournalDto } from './dto/update-journal.dto';
 export declare class JournalController {
     private journalService;
     constructor(journalService: JournalService);
@@ -32,7 +33,7 @@ export declare class JournalController {
         createdAt: Date;
         updatedAt: Date;
     }>;
-    update(req: any, id: string, body: string): Promise<{
+    update(req: any, id: string, dto: UpdateJournalDto): Promise<{
         id: string;
         userId: string;
         moodEntryId: string | null;

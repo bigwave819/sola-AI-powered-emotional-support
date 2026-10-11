@@ -12,6 +12,7 @@ const client_1 = require("../db/client");
 const users_1 = require("../db/schema/users");
 const mood_1 = require("../db/schema/mood");
 const journal_1 = require("../db/schema/journal");
+const exercise_library_1 = require("../exercises/exercise-library");
 const drizzle_orm_1 = require("drizzle-orm");
 let HomeService = class HomeService {
     async getSummary(userId) {
@@ -38,8 +39,10 @@ let HomeService = class HomeService {
         const resurfacedEntry = eligiblePast.length
             ? eligiblePast[Math.floor(Math.random() * eligiblePast.length)]
             : null;
+        const dayOfMonth = new Date().getDate();
+        const suggested = exercise_library_1.EXERCISE_LIBRARY[dayOfMonth % exercise_library_1.EXERCISE_LIBRARY.length];
         return {
-            greetingName: user.preferredName ?? null,
+            greetingName: user?.preferredName ?? null,
             latestMood: latestMood
                 ? { score: latestMood.score, createdAt: latestMood.createdAt }
                 : null,
@@ -53,7 +56,11 @@ let HomeService = class HomeService {
                     createdAt: resurfacedEntry.createdAt,
                 }
                 : null,
-            suggestedExercise: { id: 'breathing-basic', title: 'A quiet breath', durationMin: 3 },
+            suggestedExercise: {
+                id: suggested.id,
+                title: suggested.title,
+                durationMin: suggested.durationMin,
+            },
         };
     }
 };

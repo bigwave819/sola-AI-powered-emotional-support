@@ -29,6 +29,20 @@
       "when": 1788862449668,
       "tag": "0003_parched_speed",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789677051937,
+      "tag": "0004_cool_shadowcat",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789679036224,
+      "tag": "0005_uneven_vulture",
+      "breakpoints": true
     }
   ]
 }

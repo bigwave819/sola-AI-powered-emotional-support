@@ -1,22 +1,41 @@
 import { View } from 'react-native';
-import { router } from 'expo-router';
-import * as Notifications from 'expo-notifications';
+import { isNotificationsSupported } from '@/src/notifications/capability';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { useOnboardingStore } from '@/src/onboarding/onboardingStore';
 import { tokenStorage } from '@/src/auth/tokenStorage';
 import { scheduleDailyReminder } from '@/src/notifications/scheduler';
 import { api } from '@/src/api/client';
+import { useAuthStore } from '@/src/auth/authStore';
+import { resetTo } from '@/src/navigation/resetTo';
 
 export default function NotificationsStep() {
   const state = useOnboardingStore();
 
   async function finish(wantsNotifications: boolean) {
+    console.log('[ONBOARDING] finish() called — wantsNotifications:', wantsNotifications);
+    console.log('[ONBOARDING] Payload being submitted:', JSON.stringify({
+      ageConfirmed: state.ageConfirmed,
+      motivations: state.motivations,
+      baselineMood: state.baselineMood,
+      reflectionPreference: state.reflectionPreference,
+      timeCommitment: state.timeCommitment,
+      notificationsEnabled: wantsNotifications,
+    }));
 
     if (wantsNotifications) {
-      const { granted } = await Notifications.requestPermissionsAsync();
+      let granted = false;
+      if (isNotificationsSupported()) {
+        const Notifications = await import('expo-notifications');
+        const result = await Notifications.requestPermissionsAsync();
+        granted = result.granted;
+      } else {
+        console.log('Notifications unavailable in this environment (Expo Go on Android)');
+      }
+      console.log('[ONBOARDING] Notification permission granted:', granted);
       if (granted) {
         const suggestedHour = await api.get('/insights/suggested-reminder-hour');
+        console.log('[ONBOARDING] Suggested reminder hour from API:', suggestedHour);
         await scheduleDailyReminder(suggestedHour, 0);
       }
     }
@@ -25,24 +44,33 @@ export default function NotificationsStep() {
 
     const accessToken = await tokenStorage.getAccessToken();
 
-    await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/me/onboarding`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        ageConfirmed: state.ageConfirmed,
-        motivations: state.motivations,
-        baselineMood: state.baselineMood,
-        reflectionPreference: state.reflectionPreference,
-        timeCommitment: state.timeCommitment,
-        notificationsEnabled: wantsNotifications,
-      }),
-    });
+    try {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/users/me/onboarding`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          ageConfirmed: state.ageConfirmed,
+          motivations: state.motivations,
+          baselineMood: state.baselineMood,
+          reflectionPreference: state.reflectionPreference,
+          timeCommitment: state.timeCommitment,
+          notificationsEnabled: wantsNotifications,
+        }),
+      });
+      console.log('[ONBOARDING] /users/me/onboarding status:', res.status);
+      if (!res.ok) {
+        console.error('[ONBOARDING] Onboarding submit failed with status:', res.status, await res.text());
+      }
+    } catch (err) {
+      console.error('[ONBOARDING] Onboarding submit threw:', err);
+    }
 
     state.reset();
-    router.replace('/(tabs)');
+    useAuthStore.getState().markOnboardingDone();
+    resetTo('/(tabs)');
   }
 
   return (

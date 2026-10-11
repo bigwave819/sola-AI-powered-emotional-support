@@ -2,15 +2,6 @@ import { JwtService } from '@nestjs/jwt';
 export declare class AuthService {
     private jwt;
     constructor(jwt: JwtService);
-    requestMagicLink(email: string): Promise<{
-        sent: boolean;
-    }>;
-    verifyMagicLink(token: string): Promise<{
-        accessToken: string;
-        refreshToken: string;
-        userId: string;
-        isNewUser: boolean;
-    }>;
     loginWithGoogle(idToken: string): Promise<{
         accessToken: string;
         refreshToken: string;
@@ -18,6 +9,15 @@ export declare class AuthService {
         isNewUser: boolean;
     }>;
     loginWithApple(identityToken: string): Promise<{
+        accessToken: string;
+        refreshToken: string;
+        userId: string;
+        isNewUser: boolean;
+    }>;
+    requestOtp(email: string): Promise<{
+        sent: boolean;
+    }>;
+    verifyOtp(email: string, code: string): Promise<{
         accessToken: string;
         refreshToken: string;
         userId: string;

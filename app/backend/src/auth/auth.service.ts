@@ -5,8 +5,9 @@ import { OAuth2Client } from 'google-auth-library';
 import appleSignin from 'apple-signin-auth';
 import { Resend } from 'resend';
 import { db } from '../db/client';
-import { users, magicLinkTokens, refreshTokens } from '../db/schema/users';
-import { eq, and, isNull, gt } from 'drizzle-orm';
+import { users, refreshTokens } from '../db/schema/users';
+import { otpCodes } from '../db/schema/otp';
+import { eq, and, isNull, gt, desc } from 'drizzle-orm';
 import * as crypto from 'crypto';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -14,55 +15,6 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 @Injectable()
 export class AuthService {
   constructor(private jwt: JwtService) {}
-
-  // ---------- MAGIC LINK ----------
-
-  async requestMagicLink(email: string) {
-    if (!process.env.RESEND_API_KEY) {
-      throw new Error('RESEND_API_KEY is not configured — magic link emails cannot be sent.');
-    }
-
-    const resend = new Resend(process.env.RESEND_API_KEY);
-
-    const token = nanoid(32);
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 min
-
-    await db.insert(magicLinkTokens).values({ email, token, expiresAt });
-
-    const link = `${process.env.MAGIC_LINK_BASE_URL}?token=${token}`;
-
-    await resend.emails.send({
-      from: process.env.MAGIC_LINK_FROM_EMAIL!,
-      to: email,
-      subject: 'Your Sola sign-in link',
-      html: `<p>Tap below to sign in. This link expires in 15 minutes.</p><p><a href="${link}">Sign in to Sola</a></p>`,
-    });
-
-    return { sent: true };
-  }
-
-  async verifyMagicLink(token: string) {
-    const [record] = await db
-      .select()
-      .from(magicLinkTokens)
-      .where(
-        and(
-          eq(magicLinkTokens.token, token),
-          isNull(magicLinkTokens.usedAt),
-          gt(magicLinkTokens.expiresAt, new Date()),
-        ),
-      );
-
-    if (!record) throw new UnauthorizedException('Invalid or expired link');
-
-    await db
-      .update(magicLinkTokens)
-      .set({ usedAt: new Date() })
-      .where(eq(magicLinkTokens.id, record.id));
-
-    const { user, isNewUser } = await this.findOrCreateUser(record.email, 'email');
-    return this.issueTokens(user.id, isNewUser);
-  }
 
   // ---------- GOOGLE ----------
 
@@ -87,6 +39,65 @@ export class AuthService {
     if (!payload?.email) throw new UnauthorizedException('Invalid Apple token');
 
     const { user, isNewUser } = await this.findOrCreateUser(payload.email, 'apple');
+    return this.issueTokens(user.id, isNewUser);
+  }
+
+  // ---------- OTP ----------
+
+  async requestOtp(email: string) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured — OTP emails cannot be sent.');
+    }
+
+    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
+    const codeHash = crypto.createHash('sha256').update(code).digest('hex');
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 min
+
+    await db.insert(otpCodes).values({ email, codeHash, expiresAt });
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    await resend.emails.send({
+      from: process.env.MAGIC_LINK_FROM_EMAIL!,
+      to: email,
+      subject: 'Your Sola verification code',
+      html: `<p>Your Sola verification code is:</p><h2 style="letter-spacing: 4px;">${code}</h2><p>This code expires in 10 minutes.</p>`,
+    });
+
+    return { sent: true };
+  }
+
+  async verifyOtp(email: string, code: string) {
+    const [record] = await db
+      .select()
+      .from(otpCodes)
+      .where(
+        and(
+          eq(otpCodes.email, email),
+          isNull(otpCodes.usedAt),
+          gt(otpCodes.expiresAt, new Date()),
+        ),
+      )
+      .orderBy(desc(otpCodes.createdAt))
+      .limit(1);
+
+    if (!record) {
+      throw new UnauthorizedException('Code expired or not found. Request a new one.');
+    }
+
+    if (record.attempts >= 5) {
+      throw new UnauthorizedException('Too many attempts. Request a new code.');
+    }
+
+    const codeHash = crypto.createHash('sha256').update(code).digest('hex');
+
+    if (codeHash !== record.codeHash) {
+      await db.update(otpCodes).set({ attempts: record.attempts + 1 }).where(eq(otpCodes.id, record.id));
+      throw new UnauthorizedException('Incorrect code.');
+    }
+
+    await db.update(otpCodes).set({ usedAt: new Date() }).where(eq(otpCodes.id, record.id));
+
+    const { user, isNewUser } = await this.findOrCreateUser(email, 'email');
     return this.issueTokens(user.id, isNewUser);
   }
 

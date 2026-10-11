@@ -16,6 +16,9 @@ module.exports = {
         success: '#6B8F71',
         warning: '#C99A4A',
         danger: '#B85C4A',
+        cream: '#F4EBDD',
+        ink: '#2B2C24',
+        gold: '#B9954F',
       },
       fontFamily: {
         headline: ['Fraunces_600SemiBold'],
@@ -23,6 +26,8 @@ module.exports = {
         body: ['Inter_400Regular'],
         'body-medium': ['Inter_500Medium'],
         'body-semibold': ['Inter_600SemiBold'],
+        display: ['Fraunces_300Light'],
+        'display-medium': ['Fraunces_500Medium'],
       },
       borderRadius: {
         sm: '8px',

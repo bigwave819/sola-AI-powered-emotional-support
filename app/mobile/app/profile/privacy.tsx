@@ -1,12 +1,12 @@
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
-import { router } from 'expo-router';
 import { Text } from '@/src/components/ui/Text';
 import { Button } from '@/src/components/ui/Button';
 import { Card } from '@/src/components/ui/Card';
 import { useExportData } from '@/src/privacy/useExportData';
 import { useDeleteAccount } from '@/src/privacy/useDeleteAccount';
 import { useToastStore } from '@/src/ui-feedback/toastStore';
+import { resetTo } from '@/src/navigation/resetTo';
 
 export default function Privacy() {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -15,7 +15,7 @@ export default function Privacy() {
 
   function handleFinalDelete() {
     deleteAccount.mutate(undefined, {
-      onSuccess: () => router.replace('/onboarding/welcome'),
+      onSuccess: () => resetTo('/onboarding/welcome'),
       onError: () => {
         console.error('Delete account failed');
         useToastStore.getState().show('Could not delete your account. Please try again.');

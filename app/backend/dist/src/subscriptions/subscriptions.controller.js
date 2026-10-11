@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubscriptionsController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const subscriptions_service_1 = require("./subscriptions.service");
 let SubscriptionsController = class SubscriptionsController {
@@ -35,6 +36,13 @@ let SubscriptionsController = class SubscriptionsController {
 exports.SubscriptionsController = SubscriptionsController;
 __decorate([
     (0, common_1.Post)('webhook'),
+    (0, swagger_1.ApiOperation)({
+        summary: 'RevenueCat server-to-server webhook — do NOT call this from the docs UI',
+        description: 'Called by RevenueCat servers with an Authorization header matching REVENUECAT_WEBHOOK_SECRET. ' +
+            'Calls from the Swagger UI will always fail with 403.',
+    }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'Event received' }),
+    (0, swagger_1.ApiResponse)({ status: 403, description: 'Invalid webhook signature' }),
     __param(0, (0, common_1.Headers)('authorization')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -43,13 +51,17 @@ __decorate([
 ], SubscriptionsController.prototype, "webhook", null);
 __decorate([
     (0, common_1.Get)('me'),
+    (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiOperation)({ summary: 'Get the current user\u2019s subscription tier and status' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Entitlement info, e.g. { tier: "free" | "plus" }' }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], SubscriptionsController.prototype, "getMine", null);
 exports.SubscriptionsController = SubscriptionsController = __decorate([
+    (0, swagger_1.ApiTags)('subscriptions'),
     (0, common_1.Controller)('subscriptions'),
     __metadata("design:paramtypes", [subscriptions_service_1.SubscriptionsService])
 ], SubscriptionsController);

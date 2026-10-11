@@ -25,20 +25,36 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   timeCommitment: null,
   notificationsEnabled: false,
 
-  setAgeConfirmed: (v) => set({ ageConfirmed: v }),
+  setAgeConfirmed: (v) => {
+    console.log('[ONBOARDING] setAgeConfirmed:', v);
+    set({ ageConfirmed: v });
+  },
   toggleMotivation: (m) => {
     const current = get().motivations;
-    set({
-      motivations: current.includes(m)
-        ? current.filter((x) => x !== m)
-        : [...current, m],
-    });
+    const next = current.includes(m)
+      ? current.filter((x) => x !== m)
+      : [...current, m];
+    console.log('[ONBOARDING] toggleMotivation:', m, '→ motivations now:', next);
+    set({ motivations: next });
   },
-  setBaselineMood: (v) => set({ baselineMood: v }),
-  setReflectionPreference: (v) => set({ reflectionPreference: v }),
-  setTimeCommitment: (v) => set({ timeCommitment: v }),
-  setNotificationsEnabled: (v) => set({ notificationsEnabled: v }),
-  reset: () =>
+  setBaselineMood: (v) => {
+    console.log('[ONBOARDING] setBaselineMood:', v);
+    set({ baselineMood: v });
+  },
+  setReflectionPreference: (v) => {
+    console.log('[ONBOARDING] setReflectionPreference:', v);
+    set({ reflectionPreference: v });
+  },
+  setTimeCommitment: (v) => {
+    console.log('[ONBOARDING] setTimeCommitment:', v);
+    set({ timeCommitment: v });
+  },
+  setNotificationsEnabled: (v) => {
+    console.log('[ONBOARDING] setNotificationsEnabled:', v);
+    set({ notificationsEnabled: v });
+  },
+  reset: () => {
+    console.log('[ONBOARDING] reset called — clearing all onboarding state');
     set({
       ageConfirmed: false,
       motivations: [],
@@ -46,5 +62,6 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
       reflectionPreference: null,
       timeCommitment: null,
       notificationsEnabled: false,
-    }),
+    });
+  },
 }));

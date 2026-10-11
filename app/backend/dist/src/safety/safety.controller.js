@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SafetyController = void 0;
 const common_1 = require("@nestjs/common");
+const swagger_1 = require("@nestjs/swagger");
 const jwt_auth_guard_1 = require("../auth/jwt-auth.guard");
 const safety_service_1 = require("./safety.service");
 let SafetyController = class SafetyController {
@@ -25,11 +26,14 @@ let SafetyController = class SafetyController {
 exports.SafetyController = SafetyController;
 __decorate([
     (0, common_1.Get)('resources'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get crisis support resources' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of crisis resources' }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SafetyController.prototype, "getResources", null);
 exports.SafetyController = SafetyController = __decorate([
+    (0, swagger_1.ApiTags)('safety'),
     (0, common_1.Controller)('safety'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [safety_service_1.SafetyService])

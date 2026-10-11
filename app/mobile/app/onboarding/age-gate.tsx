@@ -8,6 +8,7 @@ export default function AgeGate() {
   const setAgeConfirmed = useOnboardingStore((s) => s.setAgeConfirmed);
 
   function confirm() {
+    console.log('[ONBOARDING] Age gate confirmed by user');
     setAgeConfirmed(true);
     router.push('/onboarding/motivation');
   }

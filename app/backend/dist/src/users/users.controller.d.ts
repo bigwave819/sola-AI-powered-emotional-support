@@ -1,8 +1,9 @@
 import { UsersService } from './users.service';
+import { CompleteOnboardingDto } from './dto/complete-onboarding.dto';
 export declare class UsersController {
     private usersService;
     constructor(usersService: UsersService);
-    completeOnboarding(req: any, body: any): Promise<{
+    completeOnboarding(req: any, dto: CompleteOnboardingDto): Promise<{
         success: boolean;
     }>;
     getMe(req: any): Promise<{

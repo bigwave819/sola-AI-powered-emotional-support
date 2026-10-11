@@ -1,6 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import { db } from '../../src/db/client';
 import { users } from '../../src/db/schema/users';
+import { eq } from 'drizzle-orm';
 
 const jwt = new JwtService();
 
@@ -23,5 +24,5 @@ export async function createTestUser(emailPrefix: string) {
 }
 
 export async function cleanupTestUser(userId: string) {
-  await db.delete(users).where((u: any) => u.id === userId);
+  await db.delete(users).where(eq(users.id, userId));
 }

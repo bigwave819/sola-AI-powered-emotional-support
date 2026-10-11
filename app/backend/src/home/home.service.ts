@@ -3,6 +3,7 @@ import { db } from '../db/client';
 import { users } from '../db/schema/users';
 import { moodEntries } from '../db/schema/mood';
 import { journalEntries } from '../db/schema/journal';
+import { EXERCISE_LIBRARY } from '../exercises/exercise-library';
 import { eq, and, desc } from 'drizzle-orm';
 
 @Injectable()
@@ -38,8 +39,11 @@ export class HomeService {
       ? eligiblePast[Math.floor(Math.random() * eligiblePast.length)]
       : null;
 
+    const dayOfMonth = new Date().getDate();
+    const suggested = EXERCISE_LIBRARY[dayOfMonth % EXERCISE_LIBRARY.length];
+
     return {
-      greetingName: user.preferredName ?? null,
+      greetingName: user?.preferredName ?? null,
       latestMood: latestMood
         ? { score: latestMood.score, createdAt: latestMood.createdAt }
         : null,
@@ -53,8 +57,11 @@ export class HomeService {
             createdAt: resurfacedEntry.createdAt,
           }
         : null,
-      // Exercises table doesn't exist yet (Phase 9) — hardcoded suggestion for now
-      suggestedExercise: { id: 'breathing-basic', title: 'A quiet breath', durationMin: 3 },
+      suggestedExercise: {
+        id: suggested.id,
+        title: suggested.title,
+        durationMin: suggested.durationMin,
+      },
     };
   }
 }
