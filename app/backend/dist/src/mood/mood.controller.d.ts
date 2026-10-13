@@ -7,11 +7,11 @@ export declare class MoodController {
         id: string;
         createdAt: Date;
         userId: string;
-        tags: string[] | null;
         score: number;
+        tags: string[] | null;
         note: string | null;
     }>;
-    history(req: any): Promise<{
+    history(req: any, limit?: string): Promise<{
         id: string;
         userId: string;
         score: number;

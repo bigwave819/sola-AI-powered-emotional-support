@@ -41,7 +41,7 @@ function AuthGate() {
   }, [navState?.key, status]);
 
   useEffect(() => {
-    if (userId) initPurchases(userId).catch((e) => console.warn('RevenueCat init failed', e));
+    if (userId) initPurchases(userId).catch((e: unknown) => console.warn('RevenueCat init failed', e));
   }, [userId]);
 
   return null;

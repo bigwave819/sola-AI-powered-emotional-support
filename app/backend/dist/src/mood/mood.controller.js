@@ -26,8 +26,10 @@ let MoodController = class MoodController {
     create(req, dto) {
         return this.moodService.create(req.user.userId, dto);
     }
-    history(req) {
-        return this.moodService.history(req.user.userId);
+    history(req, limit) {
+        const n = Number.parseInt(limit ?? '', 10);
+        const safe = Number.isFinite(n) ? Math.min(Math.max(n, 1), 500) : 30;
+        return this.moodService.history(req.user.userId, safe);
     }
 };
 exports.MoodController = MoodController;
@@ -43,11 +45,13 @@ __decorate([
 ], MoodController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)('history'),
-    (0, swagger_1.ApiOperation)({ summary: "List the current user's mood check-in history" }),
+    (0, swagger_1.ApiOperation)({ summary: "List the current user's mood check-in history (newest first)" }),
+    (0, swagger_1.ApiQuery)({ name: 'limit', required: false, description: 'Max entries to return (1-500, default 30)' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of mood entries' }),
     __param(0, (0, common_1.Req)()),
+    __param(1, (0, common_1.Query)('limit')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], MoodController.prototype, "history", null);
 exports.MoodController = MoodController = __decorate([

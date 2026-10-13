@@ -19,6 +19,10 @@ module.exports = {
         cream: '#F4EBDD',
         ink: '#2B2C24',
         gold: '#B9954F',
+        paper: '#F3EEE4',
+card: '#F9F6EF',
+forest: '#2F4A3E',
+coral: '#C4432F',
       },
       fontFamily: {
         headline: ['Fraunces_600SemiBold'],

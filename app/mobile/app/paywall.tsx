@@ -7,6 +7,7 @@ import { Button } from '@/src/components/ui/Button';
 import { GlassSurface } from '@/src/components/ui/GlassSurface';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToastStore } from '@/src/ui-feedback/toastStore';
+import { isPurchasesConfigured } from '@/src/subscriptions/purchases';
 
 export default function Paywall() {
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
@@ -14,10 +15,25 @@ export default function Paywall() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    Purchases.getOfferings().then((offerings) => {
-      if (offerings.current) setPackages(offerings.current.availablePackages);
-      setLoading(false);
-    });
+    async function loadOfferings() {
+      if (!isPurchasesConfigured()) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const offerings = await Purchases.getOfferings();
+        if (offerings.current?.availablePackages) {
+          setPackages(offerings.current.availablePackages);
+        }
+      } catch (err) {
+        console.warn('[PAYWALL] Failed to load offerings:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadOfferings();
   }, []);
 
   async function purchase(pkg: PurchasesPackage) {
@@ -34,9 +50,14 @@ export default function Paywall() {
   }
 
   async function restore() {
-    await Purchases.restorePurchases();
-    queryClient.invalidateQueries({ queryKey: ['entitlement'] });
-    router.back();
+    try {
+      await Purchases.restorePurchases();
+      queryClient.invalidateQueries({ queryKey: ['entitlement'] });
+      router.back();
+    } catch (err: any) {
+      console.error('Restore failed', err);
+      useToastStore.getState().show('Restore failed. Please try again.');
+    }
   }
 
   return (
@@ -50,7 +71,7 @@ export default function Paywall() {
 
       {loading ? (
         <Text variant="body">Loading plans...</Text>
-      ) : (
+      ) : packages.length > 0 ? (
         packages.map((pkg) => (
           <Button
             key={pkg.identifier}
@@ -58,9 +79,13 @@ export default function Paywall() {
             onPress={() => purchase(pkg)}
           />
         ))
+      ) : (
+        <Text variant="body">Plans aren't available right now.</Text>
       )}
 
-      <Button label="Restore purchases" variant="secondary" onPress={restore} />
+      {packages.length > 0 && (
+        <Button label="Restore purchases" variant="secondary" onPress={restore} />
+      )}
       <Button label="Not now" variant="secondary" onPress={() => router.back()} />
     </ScrollView>
   );
